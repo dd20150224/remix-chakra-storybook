@@ -1,4 +1,4 @@
-import { ChakraProvider, Box, Heading } from "@chakra-ui/react";
+import { extendTheme, ChakraProvider, Box, Heading, type ThemeConfig } from "@chakra-ui/react";
 import type { V2_MetaFunction, LinksFunction, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -13,6 +13,9 @@ import {
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
+
+import { inputTheme } from './theme/inputTheme';
+import { formTheme } from './theme/formTheme';
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -61,12 +64,53 @@ function Document({
   );
 }
 
+const theme = extendTheme({
+  components: {
+    Input: inputTheme,
+    Form: formTheme,
+    FormLabel: {
+      baseStyle: {
+        mb: "2px",
+      },
+    },
+    // FormHelperText: {
+    //   baseStyle: {
+    //     mt: "0px",
+    //   },
+    // },
+    // FormErrorMessage: {
+    //   baseStyle: {
+    //     mt: "0px",
+    //   },
+    // },
+    Button: {
+      sizes: {
+        md: {
+          p: "1px",
+          h: "8",
+          minW: "96px",
+        },
+      },
+    },
+  },
+  colors: {
+    brand: {
+      100: "#ff11fc",
+      900: "#1aff2c",
+    },
+    primary: {
+      100: "#ff11fc",
+      900: "#1aff2c",
+    },
+  },
+});
+
 export default function App() {
   // throw new Error("💣💥 Booooom");
 
   return (
     <Document>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <Outlet />
       </ChakraProvider>
     </Document>
@@ -80,7 +124,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <Box>
           <Heading as="h1" bg="purple.600">
             [CatchBoundary]: {caught.status} {caught.statusText}
@@ -95,7 +139,7 @@ export function CatchBoundary() {
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <Document title="Error!">
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <Box>
           <Heading as="h1" bg="blue.500">
             [ErrorBoundary]: There was an error: {error ? error.message : JSON.stringify(error)}
